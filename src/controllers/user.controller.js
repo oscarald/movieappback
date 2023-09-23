@@ -1,4 +1,5 @@
 import User from "../models/users.js";
+import generateToken from "../helpers/generateToken.js";
 
 const createUser = async (req, res) => {
   try {
@@ -34,7 +35,16 @@ const loginUser = async (req, res) => {
     }
     const valid = await user.verifyPassword(password);
     if (!valid) return res.status(400).json({ error: "Contraseña incorrecta" });
-    return res.status(200).json(user);
+    const { token, expiresIn } = generateToken(user._id);
+    const usr = {
+      username: user.username,
+      names: user.names,
+      firstLastname: user.firstLastname,
+      secondLastname: user.secondLastname,
+      token,
+      expiresIn,
+    };
+    return res.status(200).json(usr);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

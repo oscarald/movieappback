@@ -4,9 +4,9 @@ import User from "../models/users.js";
 
 const addFavorite = async (req, res) => {
   try {
-    const { title, year, genre, director, poster, actors, imdbID, userId } =
-      req.body;
-    if (!title || !year || !genre || !director || !poster || !imdbID || !userId)
+    const userId = req.authdata.userId;
+    const { title, year, genre, director, poster, actors, imdbID } = req.body;
+    if (!title || !year || !genre || !director || !poster || !imdbID)
       res.status(404).json({ error: "Faltan campos" });
     let movie;
     movie = await Movie.findOne({ imdbID });
@@ -42,7 +42,7 @@ const addFavorite = async (req, res) => {
 
 const getFavorites = async (req, res) => {
   try {
-    const { id } = req.query;
+    const id = req.authdata.userId;
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ error: "No existe el usuario" });
     const favorites = await Favorite.find({
